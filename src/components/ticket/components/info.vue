@@ -10,7 +10,7 @@
             <div 
                 v-if="data.itineraries && data.itineraries.length > 0" 
                 class="info__itineraries"
-                :class="{transfer: data.itineraries[0][0].segments.length > 1}"
+                :class="{transfer: data.itineraries[0][0].segments.length == 2, transfer__more: data.itineraries[0][0].segments.length > 2}"
             >
                 <div 
                     v-for="(item, index) in data.itineraries[0][0].segments" 
@@ -22,22 +22,40 @@
                         <span>{{item.dep_time.slice(0, -5).toLowerCase()}}</span>
                         <h2>{{item.dep_time.slice(-5)}}</h2>
                     </div>
-                    <div class="info__itineraries__line">
-                        <div class="info__itineraries__line-point flex">
+                    <div class="info__line line">
+                        <div class="line__block flex">
                             <small v-if="index < 1">{{item.dest_code}}</small>
                             <p>
-                                <span v-if="index < 1">{{travelTime(data.itineraries[0][0].traveltime)}}</span>
+                                <span v-if="index < 1">{{travelTime(data.best_time)}}</span>
+                                <span style="opacity: 0;" v-else-if="index == 1 && data.itineraries[0][0].segments.length > 2">0</span>
                                 <span v-else></span>
                             </p>
-                            <small v-if="(data.itineraries[0][0].segments.length == 1 && index == 0) || (data.itineraries[0][0].segments.length > 1 && index == 1)">{{item.origin_code}}</small>
+                            <small 
+                                v-if="
+                                    (data.itineraries[0][0].segments.length == 1 && index == 0) || 
+                                    (data.itineraries[0][0].segments.length > 1 && index == data.itineraries[0][0].segments.length - 1)"
+                                >{{item.origin_code}}</small>
+                            <!-- <p>{{index = 1 && data.itineraries[0][0].segments.length > 2}}</p> -->
+                            <div class="line__point"></div>
                         </div>
                         <div v-if="index < 1">
                             <p style="color: var(--green-color);" v-if="data.itineraries[0][0].segments.length == 1">Прямой рейс</p>
-                            <p style="color: var(--orange-color);" v-if="data.itineraries[0][0].segments.length == 2">через</p>
+                            <p style="color: var(--orange-color);" v-if="data.itineraries[0][0].segments.length == 2">
+                                через {{item.airport_dest}}
+                            </p>
+                            <p style="color: var(--orange-color);" v-if="data.itineraries[0][0].segments.length > 2">
+                                {{data.itineraries[0][0].segments.length - 1}} пересадки
+                            </p>
                         </div>
                     </div>
-                    <div v-if="item.dep_time && (data.itineraries[0][0].segments.length == 1 && index == 0) || (data.itineraries[0][0].segments.length > 1 && index == 1)" class="info__to">
+                    <div 
+                        v-if="
+                            item.arr_time && 
+                            (data.itineraries[0][0].segments.length == 1 && index == 0) || 
+                            (data.itineraries[0][0].segments.length > 1 && index == data.itineraries[0][0].segments.length - 1)
+                        " class="info__to">
                         <span>{{item.arr_time.slice(0, -5).toLowerCase()}}</span>
+                        <span style="color: var(--red-color);">{{dateCount(data.itineraries[0][0].segments[0].dep_time_iso, data.itineraries[0][0].segments[data.itineraries[0][0].segments.length - 1].arr_time_iso)}}</span>
                         <h2>{{item.arr_time.slice(-5)}}</h2>
                     </div>
                 </div>
@@ -83,6 +101,15 @@
                 let time = `${hour ? hour + ' ч' : ''}  ${min ? min + ' м' : ''}`
                 return time
                 
+            },
+            dateCount(dest = new Date, arr = new Date) {
+                let firstDate = dest.slice(8, 10),
+                    lastDate = arr.slice(8, 10)
+                let result = lastDate - firstDate
+                if(result < 0) {
+                    result = parseInt(lastDate)
+                }
+                return result ? `+${result}` : '' 
             }
         },
     }
@@ -116,12 +143,10 @@
     }
     .info__itineraries {
         text-align: center;
-    }
-    .info__itineraries.transfer {
         display: flex;
-        /* position: relative; */
+        position: relative;
     }
-    .info__itineraries.transfer > div:first-child p {
+    .info__itineraries.transfer > div:first-child p, .info__itineraries.transfer__more > div:first-child p {
         position: absolute;
         left: 50%;
         transform: translateX(-50%);
@@ -130,27 +155,33 @@
         margin: 5px 0 0;
         line-height: 5px;
     }
-    .info__itineraries.transfer > div:first-child .info__itineraries__line-point {
-        margin-right: 0;
-    }
-    .info__itineraries.transfer > div:last-child .info__itineraries__line-point {
-        margin-left: 0;
-    }
-    .info__itineraries.transfer > div:last-child .info__itineraries__line-point::before {
-        content: none;
-    }
-    .info__itineraries.transfer .info__itineraries__line-point {
+    .info__itineraries.transfer .line__block {
         width: 84px;
     }
-    .info__itineraries__line-point {
+    .info__itineraries.transfer__more .line__block {
+        width: 56px;
+    }
+    .line__block {
         width: 168px;
+        border-bottom: 1px solid #B9B9B9;
+        margin: 10px 0 0;
+        flex-wrap: wrap;
+    }
+    .info__itineraries > div:first-child .line__block {
+        margin-left: 30px;
+    }
+    .info__itineraries > div:last-child .line__block {
+        margin-right: 30px;
+    }
+    .line__point {
+        width: 100%;
         padding-bottom: 5px;
         position: relative;
-        border-bottom: 1px solid #B9B9B9;
-        margin: 10px 30px 0;
     }
-    .info__itineraries__line-point::before, .info__itineraries__line-point::after {
-        content: ' ';
+    .info__itineraries > div:first-child .line__point::before {
+        content: '';
+    }
+    .line__point::before, .line__point::after {
         position: absolute;
         width: 5px;
         height: 5px;
@@ -160,10 +191,14 @@
         bottom: -3px;
         background: #FFF;
     }
-    .info__itineraries__line-point::after {
-        right: 0;
+    .line__point::before {
+        left: 0;
     }
-    .info__itineraries__line-point small {
+    .line__point::after {
+        right: 0;
+        content: '';
+    }
+    .line__block small {
         color: #B9B9B9;
     }
     .info__airline {

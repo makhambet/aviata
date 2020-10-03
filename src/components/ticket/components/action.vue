@@ -4,7 +4,10 @@
         <button class="main-btn">Выбрать</button>
         <p class="action__info">Цена за всех пассажиров</p>
         <div class="action__other flex">
-            <p>Нет багажа</p>
+            <p :data-title="item.full_description" v-for="(item, index) in services" :key="index">
+                <span v-if="index.slice(0, 1) != '0'">{{item.alt_text || 0}}</span>
+                <span v-if="index.slice(0, 1) == '0'">Нет багажа</span>
+            </p>
             <button>+ Добавить багаж</button>
         </div>
     </div>
@@ -17,6 +20,10 @@
                 type: String,
                 default: ''
             },
+            services: {
+                type: Object,
+                default: () => {}
+            }
         },
     }
 </script>
@@ -53,5 +60,31 @@
         width: 124px;
         color: #5763B3;
         padding: 3px 8px;
+    }
+    .action__other p {
+        position: relative;
+        cursor: pointer;
+    }
+    .action__other p::before {
+        content: attr(data-title);
+        position: absolute;
+        left: 50%;
+        transform: translate(-50%, 50%);
+        top: -25px;
+        background-color: rgb(0, 0, 0);
+        border-radius: 10px;
+        color: #fff;
+        font-weight: bold;
+        padding: 4px 6px;
+        word-break: keep-all;
+        white-space: pre;
+        opacity: 0;
+        visibility: hidden;
+    }
+    .action__other p:hover::before {
+        transition: all .3s;
+        opacity: 1;
+        visibility: visible;
+        transform: translate(-50%, 0);
     }
 </style>

@@ -1,7 +1,7 @@
 <template>
     <div class="ticket flex">
         <info-section :data="data"></info-section>
-        <action-section :price="data.price"></action-section>
+        <action-section :services="data.services" :price="data.price"></action-section>
     </div>
 </template>
 

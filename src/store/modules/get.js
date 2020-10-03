@@ -27,7 +27,8 @@ let actions = {
                 // data.flights = data.flights.filter(e => e.validating_carrier == payload)
                 if(payload.airlines) data.flights = data.flights.filter( ({validating_carrier}) => payload.airlines.find(f => f == validating_carrier) )
                 if(payload.straight) data.flights = data.flights.filter( ({itineraries}) => itineraries[0][0].segments.length == 1 )
-                if(payload.refundable) data.flights = data.flights.filter( ({refundable}) => console.log(refundable) )
+                if(payload.refundable) data.flights = data.flights.filter( ({refundable}) => refundable )
+                if(payload.baggage) data.flights = data.flights.filter( ({services}) => !services['0PC']  )
             }
             await commit('setFlights', data.flights)
         } catch (err) {

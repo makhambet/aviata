@@ -5,6 +5,7 @@
             :key="index"
             :data="item"
         ></ticket-block>
+        <h3 v-if="!data.length">Нет результатов. Попробуйте изменить параметры фильтра</h3>
     </div>
 </template>
 

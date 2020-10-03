@@ -23,8 +23,8 @@
                 </div>
             </div>
             <div class="home__content flex">
-                <filter-section class="home__filter"></filter-section>
-                <result-section :data="FLIGHTS" class="home__ticket"></result-section>
+                <filter-section v-if="AIRLINES" class="home__filter"></filter-section>
+                <result-section v-if="FLIGHTS" :data="FLIGHTS" class="home__ticket"></result-section>
             </div>
         </div>
     </section>
@@ -36,7 +36,8 @@
         name: 'Home',
         computed: {
             ...mapGetters([
-                'FLIGHTS'
+                'FLIGHTS',
+                'AIRLINES'
             ])
         },
         components: {
