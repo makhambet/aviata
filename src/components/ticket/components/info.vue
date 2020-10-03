@@ -223,4 +223,9 @@
     .info__refundable {
         color: #707276;
     }
+    @media (max-width: 1200px) {
+        .ticket__info {
+            padding-left: 20px;
+        }
+    }
 </style>
