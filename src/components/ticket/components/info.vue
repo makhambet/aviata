@@ -107,7 +107,9 @@
                     lastDate = arr.slice(8, 10)
                 let result = lastDate - firstDate
                 if(result < 0) {
-                    result = parseInt(lastDate)
+                    let lastMonthDate = new Date(Date.parse(dest) - (firstDate * 24 * 60 * 60 * 1000)).getDate() || 30
+                    console.log(lastMonthDate, firstDate, lastDate)
+                    result = parseInt(lastMonthDate - firstDate + +lastDate)
                 }
                 return result ? `+${result}` : '' 
             }
